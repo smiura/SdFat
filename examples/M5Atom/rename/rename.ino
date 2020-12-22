@@ -1,12 +1,13 @@
 /*
  * This program demonstrates use of rename().
  */
+#include "M5Atom.h"
 #include "SdFat.h"
 #include "sdios.h"
 
 // SD_FAT_TYPE = 0 for SdFat/File as defined in SdFatConfig.h,
 // 1 for FAT16/FAT32, 2 for exFAT, 3 for FAT16/FAT32 and exFAT.
-#define SD_FAT_TYPE 0
+#define SD_FAT_TYPE 3
 
 /*
   Change the value of SD_CS_PIN if you are using SPI and
@@ -30,7 +31,7 @@ const uint8_t SD_CS_PIN = SDCARD_SS_PIN;
 #if HAS_SDIO_CLASS
 #define SD_CONFIG SdioConfig(FIFO_SDIO)
 #elif ENABLE_DEDICATED_SPI
-#define SD_CONFIG SdSpiConfig(SD_CS_PIN, DEDICATED_SPI)
+#define SD_CONFIG SdSpiConfig(SD_CS_PIN, DEDICATED_SPI,  SD_SCK_MHZ(16))
 #else  // HAS_SDIO_CLASS
 #define SD_CONFIG SdSpiConfig(SD_CS_PIN, SHARED_SPI)
 #endif  // HAS_SDIO_CLASS
@@ -58,8 +59,10 @@ ArduinoOutStream cout(Serial);
 #define error(s) sd.errorHalt(&Serial, F(s))
 //------------------------------------------------------------------------------
 void setup() {
-  Serial.begin(9600);
-
+  M5.begin(true, false, true);
+  Serial.begin(115200);
+  SPI.begin(23,33,19,-1);
+  
   // Wait for USB Serial
   while (!Serial) {
     SysCall::yield();
